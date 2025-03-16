@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"slices"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,6 +25,7 @@ func main() {
 	router.GET("/albums", getAlbums)
 	router.GET("/albums/:id", getAlbumByID)
 	router.POST("/albums", postAlbum)
+	router.DELETE("/albums/:id", deleteAlbum)
 
 	router.Run("localhost:8080")
 
@@ -62,4 +64,17 @@ func getAlbumByID(c *gin.Context) {
 	//in case there is not that id in the slice "albums", an error message of 404 type will be shown
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 
+}
+
+func deleteAlbum(c *gin.Context) {
+	id := c.Param("id")
+
+	for j, i := range albums {
+		if i.ID == id {
+			albums = slices.Delete(albums, j, j+1)
+			return
+		}
+	}
+
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 }
